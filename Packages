@@ -1,0 +1,16 @@
+Package: com.slash.quickapplauncher
+Version: 0.0.1-1+debug
+Architecture: iphoneos-arm64
+Maintainer: XxSlashDarkerBladexX
+Installed-Size: 4
+Depends: mobilesubstrate (>= 0.9.5000), perferenceloader
+Filename: ./packages/com.slash.quickapplauncher_0.0.1-1+debug_iphoneos-arm64.deb
+Size: 650
+MD5sum: 5bd06bf02b90862b776a19712757851d
+SHA1: 64a0d08f6ca5899b1cb572f52805b48c15ae1983
+SHA256: 5c8878396380f2e6ec9f98807a9169be91419dc829c8bb2fdffaa28bb42038b1
+Section: Tweaks
+Description: An awesome MobileSubstrate tweak!
+Author: XxSlashDarkerBladexX
+Name: QuickAppLauncher
+
