@@ -1,6 +1,6 @@
 Package: com.slash.quickapplauncher
 Name: QuickAppLauncher
-Version: 0.0.3
+Version: 0.0.4
 Architecture: iphoneos-arm64
 Description: idk
 Maintainer: sudoslashcoder

@@ -1,10 +1,10 @@
 Package: com.slash.quickapplauncher
-Version: 0.0.2-7+debug
+Version: 0.0.3-7+debug
 Architecture: iphoneos-arm64
 Maintainer: sudoslashcoder
 Installed-Size: 4
 Depends: mobilesubstrate, preferenceloader
-Filename: ./packages/com.slash.quickapplauncher_0.0.2-7+debug_iphoneos-arm64.deb
+Filename: ./packages/com.slash.quickapplauncher_0.0.3-7+debug_iphoneos-arm64.deb
 Size: 612
 MD5sum: 8a46cd8691d88ad541196e181d0843b8
 SHA1: 51d4dfe1bb9b9014d0ece0f02a8d933c94c18416

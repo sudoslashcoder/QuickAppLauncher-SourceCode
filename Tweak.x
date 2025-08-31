@@ -1,95 +1,62 @@
 #import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-#import <SpringBoard/SpringBoard.h>
+#import <Foundation/Foundation.h>
+#import <substrate.h>
 
-// =============================
-// QuickAppLauncherView
-// =============================
-@interface QuickAppLauncherView : UIView
+#define SETTINGS_PATH @"/var/mobile/Library/Preferences/com.slash.quickapplauncher.plist"
+
+@interface QuickAppLauncherButton : UIButton
+@property NSString *bundleID;
 @end
 
-@implementation QuickAppLauncherView
-
-- (instancetype)init {
-    self = [super initWithFrame:CGRectMake(100, 200, 60, 60)];
-    if (self) {
-        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
-        self.layer.cornerRadius = 30;
-        self.userInteractionEnabled = YES;
-
-        // Load preferences
-        NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:
-            @"/var/mobile/Library/Preferences/com.yourname.quickapplauncher.plist"];
-
-        // Apply scale
-        CGFloat buttonScale = [[prefs objectForKey:@"QALButtonScale"] floatValue];
-        if (buttonScale <= 0) buttonScale = 1.0;
-        self.transform = CGAffineTransformMakeScale(buttonScale, buttonScale);
-
-        // Add tap gesture
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(launchApp)];
-        [self addGestureRecognizer:tap];
-    }
-    return self;
-}
-
-- (void)launchApp {
-    // Load prefs again in case user changed them
-    NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:
-        @"/var/mobile/Library/Preferences/com.yourname.quickapplauncher.plist"];
-
-    NSString *bundleID = [prefs objectForKey:@"QALBundleID"];
-    if (!bundleID || [bundleID length] == 0) {
-        bundleID = @"com.apple.Preferences"; // Default to Settings
-    }
-
-    SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithBundleIdentifier:bundleID];
-    if (app) {
-        [[%c(SBUIController) sharedInstance] activateApplication:app];
-    }
-}
-
+@implementation QuickAppLauncherButton
 @end
 
-// =============================
-// UIWindow helper
-// =============================
-@interface QuickAppLauncherView (WindowHelper)
-- (UIWindow *)mainAppWindow;
-@end
-
-@implementation QuickAppLauncherView (WindowHelper)
-- (UIWindow *)mainAppWindow {
-    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
-        if ([scene isKindOfClass:[UIWindowScene class]]) {
-            UIWindowScene *windowScene = (UIWindowScene *)scene;
-            for (UIWindow *window in windowScene.windows) {
-                if (window.isKeyWindow) {
-                    return window;
-                }
-            }
-        }
-    }
-    return nil;
-}
-@end
-
-// =============================
-// Hook SpringBoard
-// =============================
 %hook SpringBoard
 
 - (void)applicationDidFinishLaunching:(id)application {
     %orig;
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        QuickAppLauncherView *launcher = [[QuickAppLauncherView alloc] init];
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:SETTINGS_PATH];
+    NSArray *apps = settings[@"quickApps"];
+    if (!apps || apps.count == 0) return;
 
-        UIWindow *mainWindow = [launcher mainAppWindow];
-        if (mainWindow) {
-            [mainWindow addSubview:launcher];
-        }
-    });
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+
+    for (NSDictionary *appDict in apps) {
+        QuickAppLauncherButton *button = [QuickAppLauncherButton buttonWithType:UIButtonTypeCustom];
+        button.bundleID = appDict[@"bundleID"];
+        button.frame = CGRectMake([appDict[@"x"] intValue], [appDict[@"y"] intValue], 60, 60);
+        button.backgroundColor = [[UIColor systemBlueColor] colorWithAlphaComponent:0.7];
+        button.layer.cornerRadius = 10;
+
+        // Launch app on tap
+        [button addTarget:self action:@selector(launchApp:) forControlEvents:UIControlEventTouchUpInside];
+
+        // Enable drag
+        UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragButton:)];
+        [button addGestureRecognizer:pan];
+
+        [window addSubview:button];
+    }
+}
+
+// Launch app
+- (void)launchApp:(QuickAppLauncherButton *)sender {
+    Class SBAppController = objc_getClass("SBApplicationController");
+    id controller = [SBAppController sharedInstance];
+    id app = [controller applicationWithBundleIdentifier:sender.bundleID];
+    [app launch];
+
+    UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:1];
+    [generator impactOccurred];
+}
+
+// Drag handler
+- (void)dragButton:(UIPanGestureRecognizer *)gesture {
+    UIView *button = gesture.view;
+    CGPoint translation = [gesture translationInView:button.superview];
+    button.center = CGPointMake(button.center.x + translation.x, button.center.y + translation.y);
+    [gesture setTranslation:CGPointZero inView:button.superview];
 }
 
 %end
