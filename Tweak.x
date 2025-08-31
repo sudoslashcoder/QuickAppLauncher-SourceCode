@@ -1,56 +1,64 @@
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
+#import <SpringBoard/SpringBoard.h>
 
+// =============================
+// QuickAppLauncherView
+// =============================
 @interface QuickAppLauncherView : UIView
 @end
 
-@implementation QuickAppLauncherView {
-    UIButton *launcherButton;
-}
+@implementation QuickAppLauncherView
 
 - (instancetype)init {
-    self = [super initWithFrame:CGRectMake(20, [UIScreen mainScreen].bounds.size.height - 100, 60, 60)];
+    self = [super initWithFrame:CGRectMake(100, 200, 60, 60)];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
+        self.layer.cornerRadius = 30;
+        self.userInteractionEnabled = YES;
 
-        launcherButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        launcherButton.frame = self.bounds;
-        launcherButton.layer.cornerRadius = 30;
-        launcherButton.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        [launcherButton setTitle:@"⚡" forState:UIControlStateNormal];
-        launcherButton.titleLabel.font = [UIFont systemFontOfSize:30];
-        [launcherButton addTarget:self action:@selector(showAppList) forControlEvents:UIControlEventTouchUpInside];
+        // Load preferences
+        NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:
+            @"/var/mobile/Library/Preferences/com.yourname.quickapplauncher.plist"];
 
-        [self addSubview:launcherButton];
+        // Apply scale
+        CGFloat buttonScale = [[prefs objectForKey:@"QALButtonScale"] floatValue];
+        if (buttonScale <= 0) buttonScale = 1.0;
+        self.transform = CGAffineTransformMakeScale(buttonScale, buttonScale);
+
+        // Add tap gesture
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(launchApp)];
+        [self addGestureRecognizer:tap];
     }
     return self;
 }
 
-- (void)showAppList {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Quick Apps"
-                                                                   message:@"Select an app"
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+- (void)launchApp {
+    // Load prefs again in case user changed them
+    NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:
+        @"/var/mobile/Library/Preferences/com.yourname.quickapplauncher.plist"];
 
-    NSArray *apps = @[@"Safari", @"Mail", @"Settings"];
-    for (NSString *appName in apps) {
-        UIAlertAction *action = [UIAlertAction actionWithTitle:appName
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * _Nonnull action) {
-            NSLog(@"Launching %@", appName);
-        }];
-        [alert addAction:action];
+    NSString *bundleID = [prefs objectForKey:@"QALBundleID"];
+    if (!bundleID || [bundleID length] == 0) {
+        bundleID = @"com.apple.Preferences"; // Default to Settings
     }
 
-    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-
-    UIViewController *rootVC = [self topViewController];
-    [rootVC presentViewController:alert animated:YES completion:nil];
+    SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithBundleIdentifier:bundleID];
+    if (app) {
+        [[%c(SBUIController) sharedInstance] activateApplication:app];
+    }
 }
 
-- (UIViewController *)topViewController {
-    UIWindow *mainWindow = [self mainAppWindow];
-    return mainWindow.rootViewController;
-}
+@end
 
+// =============================
+// UIWindow helper
+// =============================
+@interface QuickAppLauncherView (WindowHelper)
+- (UIWindow *)mainAppWindow;
+@end
+
+@implementation QuickAppLauncherView (WindowHelper)
 - (UIWindow *)mainAppWindow {
     for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
         if ([scene isKindOfClass:[UIWindowScene class]]) {
@@ -64,10 +72,11 @@
     }
     return nil;
 }
-
 @end
 
-
+// =============================
+// Hook SpringBoard
+// =============================
 %hook SpringBoard
 
 - (void)applicationDidFinishLaunching:(id)application {
