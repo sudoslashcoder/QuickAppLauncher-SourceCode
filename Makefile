@@ -1,12 +1,10 @@
 ARCHS = arm64
 TARGET := iphone:clang:16.5:latest
 
-# Force Theos to use these programs (optional)
-export CC=/toolchain/linux/iphone/bin/ld
-export CXX=/toolchain/linux/iphone/bin/ld
-export LD=$(THEOS)/toolchain/linux/iphone/bin/ld
-
 INSTALL_TARGET_PROCESSES = SpringBoard
+
+# ? Rootless support
+THEOS_PACKAGE_SCHEME = rootless
 
 include $(THEOS)/makefiles/common.mk
 
