@@ -1,10 +1,10 @@
 Package: com.slash.quickapplauncher
 Name: QuickAppLauncher
-Version: 0.0.4
+Version: 0.1
 Architecture: iphoneos-arm64
-Description: idk
+Description: My first tweak. Lol
 Maintainer: sudoslashcoder
 Author: sudoslashcoder
 Section: Tweaks
 Depends: mobilesubstrate, preferenceloader
-
+Priority: optional

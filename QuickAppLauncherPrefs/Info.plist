@@ -1,0 +1,23 @@
+<?xml version="0.1" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 0.1//EN"
+ "http://www.apple.com/DTDs/PropertyList-0.1.dtd">
+<plist version="0.1">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>QuickAppLauncherPrefs</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourname.quickapplauncher.prefs</string>
+	<key>CFBundleName</key>
+	<string>QuickAppLauncherPrefs</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1</string>
+	<key>CFBundleVersion</key>
+	<string>0.1</string>
+	<key>NSPrincipalClass</key>
+	<string>QALRootListController</string>
+</dict>
+</plist>

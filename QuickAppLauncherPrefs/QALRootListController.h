@@ -1,5 +1,4 @@
 #import <Preferences/PSListController.h>
 
-@interface QALRootListController : PSListController
+@interface RootListController : PSListController
 @end
-
