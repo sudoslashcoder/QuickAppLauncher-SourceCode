@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>items</key>
     <array>
         <dict>
-            <key>cell</key> <string>PSGroupCell</string>
-            <key>label</key> <string>Quick App Launcher</string>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Quick App Launcher</string>
         </dict>
 
         <dict>
-            <key>cell</key> <string>PSTextFieldSpecifier</string>
-            <key>key</key> <string>quickApps</string>
-            <key>label</key> <string>Quick Apps (comma-separated bundle IDs)</string>
+            <key>cell</key>
+            <string>PSTextFieldSpecifier</string>
+            <key>key</key>
+            <string>quickApps</string>
+            <key>label</key>
+            <string>Quick Apps (comma-separated bundle IDs)</string>
         </dict>
 
         <dict>
-            <key>cell</key> <string>PSSwitchCell</string>
-            <key>key</key> <string>snapToEdgeEnabled</string>
-            <key>label</key> <string>Enable Snap-to-Edge</string>
-            <key>default</key> <true/>
-        </dict>
-
-        <dict>
-            <key>cell</key> <string>PSButtonCell</string>
-            <key>label</key> <string>Respring</string>
-            <key>action</key> <string>respringDevice</string>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>key</key>
+            <string>snapToEdgeEnabled</string>
+            <key>label</key>
+            <string>Enable Snap-to-Edge</string>
+            <key>default</key>
+            <true/>
         </dict>
     </array>
     <key>title</key>

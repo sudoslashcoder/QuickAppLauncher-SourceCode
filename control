@@ -1,10 +1,8 @@
 Package: com.slash.quickapplauncher
 Name: QuickAppLauncher
-Version: 0.1
+Version: 0.1.1
 Architecture: iphoneos-arm64
-Description: My first tweak. Lol
-Maintainer: sudoslashcoder
-Author: sudoslashcoder
+Depends: mobilesubstrate | com.ex.substitute | substitute | libhooker | org.coolstar.libhooker, preferenceloader, ldid
+Maintainer: sudoslashcoder <amongus878789@gmail.com>
 Section: Tweaks
-Depends: mobilesubstrate, preferenceloader
-Priority: optional
+Description: Quick launcher tweak - quick app shortcuts (rootless-ready)

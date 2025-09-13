@@ -3,19 +3,15 @@
     "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- from sudoslashcoder-->
-    <key>sudoslashcoder's</key>
+    <key>Title</key>
     <string>Quick App Launcher</string>
 
-    <!-- Bundle name of your prefs bundle -->
     <key>PreferenceBundle</key>
     <string>QuickAppLauncherPrefs</string>
 
-    <!-- Tells PreferenceLoader it’s a Settings entry -->
     <key>EntryType</key>
     <string>PSBundleSpecifier</string>
 
-    <!-- Optional icon inside your bundle’s Resources -->
     <key>Icon</key>
     <string>icon.png</string>
 </dict>

@@ -1,33 +1,55 @@
 #import "QALPreferences.h"
-#import <Cephei/HBPreferences.h>
 
 @implementation QALPreferences {
-    HBPreferences *_prefs;
+    NSDictionary *_prefs;
 }
 
 + (instancetype)sharedInstance {
-    static QALPreferences *shared;
+    static QALPreferences *s = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        shared = [[self alloc] init];
+        s = [[self alloc] init];
     });
-    return shared;
+    return s;
 }
 
 - (instancetype)init {
-    self = [super init];
-    if (self) {
-        _prefs = [[HBPreferences alloc] initWithIdentifier:@"com.yourname.quickapplauncher"];
+    if ((self = [super init])) {
+        [self reload];
+        // observe file changes to reload prefs when user edits (simple timer fallback)
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:NSUserDefaultsDidChangeNotification object:nil];
     }
     return self;
 }
 
+- (void)reload {
+    NSString *path = @"/var/mobile/Library/Preferences/com.slash.quickapplauncher.plist";
+    NSDictionary *d = [NSDictionary dictionaryWithContentsOfFile:path];
+    if (d) _prefs = d;
+    else _prefs = @{};
+}
+
 - (NSArray *)quickApps {
-    return [_prefs objectForKey:@"quickApps"] ?: @[];
+    id v = _prefs[@"quickApps"];
+    if (!v) return @[];
+    if ([v isKindOfClass:[NSArray class]]) return v;
+    if ([v isKindOfClass:[NSString class]]) {
+        NSString *s = (NSString*)v;
+        NSMutableArray *out = [NSMutableArray new];
+        for (NSString *part in [s componentsSeparatedByString:@","]) {
+            NSString *trim = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if (trim.length) [out addObject:trim];
+        }
+        return out;
+    }
+    return @[];
 }
 
 - (BOOL)snapToEdgeEnabled {
-    return [_prefs boolForKey:@"snapToEdgeEnabled" default:YES];
+    id v = _prefs[@"snapToEdgeEnabled"];
+    if (!v) return YES;
+    if ([v respondsToSelector:@selector(boolValue)]) return [v boolValue];
+    return YES;
 }
 
 @end
